@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
-const connection = require('./db');
+const connection = require('./config/db');
 const path = require('path');
 
 app.set("view engine", "ejs");

@@ -55,7 +55,7 @@ app.get("/dashboard", (req, res) => {
                 return { ...doctor, patient_count: patientCount };
             });
 
-            res.render("dashboard", { doctors: doctorData });
+            res.render("dashboard", { doctors: doctorData, doctorname: req.session.doctorname });
         });
     });
 });
@@ -139,7 +139,7 @@ app.post("/booking", (req, res) => {
 });
 
 // logout
-app.post("/logout", (req, res) => {
+app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             return res.status(500).send("Failed to logout");
@@ -147,6 +147,52 @@ app.post("/logout", (req, res) => {
         res.redirect("/login");
     })
 });
+
+
+const isAuthenticated = (req, res, next) => {
+    if (!req.session.doctorId) {
+        res.redirect("/login");
+        return;
+    }
+    next();
+};
+
+// Profile
+
+app.get("/profile", isAuthenticated, (req, res) => {
+    const doctorId = req.session.doctorId;
+
+    let profileQuery = 'SELECT * from  doctor_list where id = ?';
+
+    connection.query(profileQuery, [doctorId], (err, result) => {
+        if (err) throw err;
+        res.render('profile', { userInfo: result[0] });
+
+    })
+
+
+
+})
+
+// update profile 
+
+app.post("/update-profile", (req, res) => {
+    const { hiddenId, username, name, password, phone, img } = req.body;
+
+    const updateProfileQuery = 'UPDATE doctor_list SET username = ?, name = ?, password_hash = ?, phone_number = ?, user_img = ? WHERE id = ?';
+
+    connection.query(updateProfileQuery, [username, name, password, phone, img, hiddenId], (err, result) => {
+        if (err) {
+            console.error("Error updating profile:", err);
+            res.status(500).send("Error updating profile");
+            return;
+        }
+
+        res.redirect("/dashboard");
+    });
+});
+
+
 
 
 // error handeling

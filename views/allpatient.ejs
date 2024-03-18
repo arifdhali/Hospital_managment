@@ -11,13 +11,30 @@
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1>All Patients</h1>
+    <div class="container ">
+        <div class="user_profile d-flex justify-content-between">
+            <h1>All Patients</h1>
+            <div class="btn-group">
+                <span type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="images/a.png" alt="">
+                </span>
+                <ul class="dropdown-menu p-2">
+                    <li>
+                        <%= doctorname %>
+                    </li>
+                    <li>
+                        <a href="/profile">Profile</a>
+                    </li>
+                    <li id="logoutBtn">
+                        <a href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <div class="d-flex justify-content-between">
-            <h1>Hello Doctor, <%= doctorname %>
+            <h1>Hello Doctor,
             </h1>
-            <button class="btn btn-danger" id="logoutBtn">Logout</button>
         </div>
 
         <table class="table mt-3">
@@ -32,7 +49,7 @@
             </thead>
             <tbody>
                 <% if(patients.length> 0) { %>
-                    <% patients.forEach(patient=> {              %>
+                    <% patients.forEach(patient=> { %>
                         <tr>
                             <td>
                                 <%= patient.booking_id %>
@@ -47,7 +64,7 @@
                                 <%= patient.booking_date %>
                             </td>
                             <td>
-                              <button class="btn btn-warning">View</button>
+                                <button class="btn btn-warning">View</button>
                             </td>
 
                         </tr>
@@ -56,11 +73,13 @@
                                 <tr class="table-warning text-center">
                                     <td colspan="4">You don't have any patients now</td>
                                 </tr>
-                        <% } %>
+                                <% } %>
             </tbody>
         </table>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script src="js/script.js"></script>
 </body>
 

@@ -157,8 +157,20 @@ const isAuthenticated = (req, res, next) => {
     next();
 };
 
-// Profile
+// add-doctor
 
+app.get("/add-doctor", isAuthenticated, (req, res) => {
+
+
+
+    res.render("add-doctor");
+})
+
+
+
+
+
+// Profile
 app.get("/profile", isAuthenticated, (req, res) => {
     const doctorId = req.session.doctorId;
 
@@ -175,9 +187,9 @@ app.get("/profile", isAuthenticated, (req, res) => {
 })
 
 // update profile 
-
 app.post("/update-profile", (req, res) => {
     const { hiddenId, username, name, password, phone, img } = req.body;
+
 
     const updateProfileQuery = 'UPDATE doctor_list SET username = ?, name = ?, password_hash = ?, phone_number = ?, user_img = ? WHERE id = ?';
 

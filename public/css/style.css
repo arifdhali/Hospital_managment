@@ -100,3 +100,8 @@ body {
 .user_profile .dropdown-menu a{
     color: #000;
 }
+#passType{
+    cursor: pointer;
+    color: rgb(153, 3, 153);
+    padding: 3px;
+}

@@ -2,17 +2,28 @@
 // booking date
 let boookingDate = document.getElementById('bookingDate');
 if (boookingDate) boookingDate.min = new Date().toISOString().split('T')[0];
+const passType = document.getElementById("passType");
+const password = document.getElementById("password");
+if (passType)
+    passType.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (password.type === "password") {
+            password.type = "text";
+        } else {
+            password.type = "password";
+        }
+    });
 
 
-let book = document.querySelector("button");
-book.addEventListener("click", () => {
+// let book = document.querySelector("button");
+// book.addEventListener("click", () => {
 
 
 
 
-})
+// })
 
-// doctor name 
+// doctor name
 // const doctorName = document.getElementById("doctorName");
 // const isChangeDoctor = (e) => {
 //     if (e) {
@@ -121,3 +132,39 @@ book.addEventListener("click", () => {
 // };
 
 // const chart = new Chart(ctx, config);
+
+
+const name = document.getElementById('name');
+const username = document.getElementById('username');
+const inputCity = document.getElementById('inputCity');
+const inputState = document.getElementById('inputState');
+const inputPincode = document.getElementById('inputPincode');
+const gridCheck = document.getElementById('gridCheck');
+
+if (inputPincode)
+    function validateForm(e) {
+        let value = e.target.value.trim();
+        if (value.length !== 6 || !/^\d+$/.test(value)) {
+            console.log('Invalid pincode format');
+            return;
+        }
+
+        let api = `https://api.postalpincode.in/pincode/${value}`;
+
+        fetch(api)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data && data.length > 0 && data[0].PostOffice) {
+                    inputState.value = data[0].PostOffice[0].State
+                    inputCity.value = data[0].PostOffice[0].Block
+                    console.log( data[0].PostOffice[0].Block);
+                } else {
+                    console.log('Invalid pincode');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+inputPincode.addEventListener("input", validateForm)

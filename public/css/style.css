@@ -100,6 +100,12 @@ body {
 .user_profile .dropdown-menu a{
     color: #000;
 }
+.user_img{
+    width: 200px;
+    height: 180px;
+    object-fit: cover;
+    margin: 1rem 0;
+}
 #passType{
     cursor: pointer;
     color: rgb(153, 3, 153);

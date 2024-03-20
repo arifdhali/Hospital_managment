@@ -17,7 +17,7 @@
 
     <div class="container">
         <h1>Update profile</h1>
-        <form action="/update-profile" class="form" method="post" enctype="multipart/form-data">
+        <form action="/update-profile" class="form" method="post">
             <input type="hidden" name="hiddenId" value="<%=userInfo.id  %>">
             <div class="row">
                 <div class="col">
@@ -44,10 +44,11 @@
                     <input type="tel" name="phone" value="<%= userInfo.phone_number  %>" class="form-control" id="phone"
                         placeholder="Phone">
                 </div>
-                <img src="" alt="User Image">
-
+                <div class="col-12">
+                    <img class="user_img" src="/uploads/images/<%= userInfo.user_img %>" alt="User Image">
+                </div>
                 <div class="my-2">
-                    <input type="file" name="img" id="img">
+                    <input type="file" name="user_img" id="img">
                 </div>
 
             </div>

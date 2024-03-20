@@ -3,6 +3,9 @@ const app = express();
 const session = require('express-session');
 const connection = require('./config/db');
 const path = require('path');
+const multer = require('multer');
+
+
 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, 'public')));
@@ -13,6 +16,25 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
+// For handeling the image uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        let subtype = file.mimetype.split("/");
+        if (subtype[0] === "image") {
+            return cb(null, "public/uploads/images");
+        } else if (file.mimetype === 'application/pdf') {
+            return cb(null, "public/uploads/pdf");
+        } else {
+            return cb(null, "public/uploads/others");
+        }
+    },
+    filename: (req, file, cb) => {
+        return cb(null, `${file.fieldname}-${new Date().getTime()}-${file.originalname}`);
+    }
+
+})
+const upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
     let sqlQuery = 'SELECT * FROM `doctor_list` WHERE role = "user"';
@@ -25,18 +47,22 @@ app.get("/", (req, res) => {
     });
 });
 
-app.get("/dashboard", (req, res) => {
+const isAuthenticated = (req, res, next) => {
     if (!req.session.doctorId) {
         res.redirect("/login");
         return;
     }
+    next();
+};
+;
+app.get("/dashboard", isAuthenticated, (req, res) => {
 
     if (req.session.role !== 'admin') {
         res.redirect("/login");
         return;
     }
 
-    let doctorsQuery = 'SELECT id, name,doctor_specalist,start_date,phone_number FROM `doctor_list` WHERE role = "user"';
+    let doctorsQuery = 'SELECT id, name,doctor_specalist,start_date,phone_number,user_img FROM `doctor_list` WHERE role = "user"';
     connection.query(doctorsQuery, (err, doctors) => {
         if (err) {
             throw err;
@@ -54,7 +80,6 @@ app.get("/dashboard", (req, res) => {
                 let patientCount = results.find(result => result.doctor_id === doctor.id)?.patient_count || 0;
                 return { ...doctor, patient_count: patientCount };
             });
-
             res.render("dashboard", { doctors: doctorData, doctorname: req.session.doctorname });
         });
     });
@@ -102,11 +127,7 @@ app.post("/login", (req, res) => {
         }
     });
 });
-app.get("/patient-details", (req, res) => {
-    if (!req.session.doctorId) {
-        res.redirect("/login");
-        return;
-    }
+app.get("/patient-details", isAuthenticated, (req, res) => {
 
     if (req.session.role !== 'user') {
         res.redirect("/login");
@@ -133,7 +154,6 @@ app.post("/booking", (req, res) => {
         if (err) {
             throw err;
         }
-        console.log("Inserted patient");
         res.redirect("/");
     });
 });
@@ -149,22 +169,22 @@ app.get("/logout", (req, res) => {
 });
 
 
-const isAuthenticated = (req, res, next) => {
-    if (!req.session.doctorId) {
-        res.redirect("/login");
-        return;
-    }
-    next();
-};
+
 
 // add-doctor
-
 app.get("/add-doctor", isAuthenticated, (req, res) => {
-
-
-
     res.render("add-doctor");
-})
+});
+
+app.post("/add-doctor", upload.single('user_image'), (req, res, next) => {
+    let imagePath = req.file.filename;
+    const { name, username, pasword, category, start_date, phone, address } = req.body;
+    let addQuery = 'INSERT INTO doctor_list (name,username,password_hash,doctor_specalist,start_date,phone_number,user_img,address) VALUES (?,?,?,?,?,?,?,?)';
+    connection.query(addQuery, [name, username, pasword, category, start_date, phone, imagePath, address], (err, result) => {
+        if (err) throw err;
+    })
+    res.redirect("/dashboard");
+});
 
 
 
@@ -173,24 +193,20 @@ app.get("/add-doctor", isAuthenticated, (req, res) => {
 // Profile
 app.get("/profile", isAuthenticated, (req, res) => {
     const doctorId = req.session.doctorId;
-
     let profileQuery = 'SELECT * from  doctor_list where id = ?';
 
     connection.query(profileQuery, [doctorId], (err, result) => {
         if (err) throw err;
+        console.log(result[0]);
         res.render('profile', { userInfo: result[0] });
 
     })
-
-
-
 })
 
 // update profile 
 app.post("/update-profile", (req, res) => {
+
     const { hiddenId, username, name, password, phone, img } = req.body;
-
-
     const updateProfileQuery = 'UPDATE doctor_list SET username = ?, name = ?, password_hash = ?, phone_number = ?, user_img = ? WHERE id = ?';
 
     connection.query(updateProfileQuery, [username, name, password, phone, img, hiddenId], (err, result) => {

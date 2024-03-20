@@ -1,7 +1,9 @@
 
 // booking date
-let boookingDate = document.getElementById('bookingDate');
-if (boookingDate) boookingDate.min = new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type="date"]').forEach(function (input) {
+    input.min = new Date().toISOString().split('T')[0];
+});
+
 const passType = document.getElementById("passType");
 const password = document.getElementById("password");
 if (passType)
@@ -157,7 +159,7 @@ if (inputPincode)
                 if (data && data.length > 0 && data[0].PostOffice) {
                     inputState.value = data[0].PostOffice[0].State
                     inputCity.value = data[0].PostOffice[0].Block
-                    console.log( data[0].PostOffice[0].Block);
+                    console.log(data[0].PostOffice[0].Block);
                 } else {
                     console.log('Invalid pincode');
                 }

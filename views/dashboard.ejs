@@ -18,7 +18,11 @@
 
             <div class="btn-group">
                 <span type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="images/a.png" alt="">
+                    <% if(doctors.user_img) { %>
+                        <img src="<% doctors.user_img %>" alt="">
+                        <%}else{ %>
+                            <img src="images/admin.png" alt="">
+                            <% } %>
                 </span>
                 <ul class="dropdown-menu p-2">
                     <li>

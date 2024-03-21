@@ -45,7 +45,11 @@
                         placeholder="Phone">
                 </div>
                 <div class="col-12">
-                    <img class="user_img" src="/uploads/images/<%= userInfo.user_img %>" alt="User Image">
+                    <% if(userInfo.user_img) { %>
+                        <img class="user_img" src="/uploads/images/<%= userInfo.user_img %>" alt="User Image">
+                        <% }else { %>
+                            <img class="user_img" src="images/admin.png" alt="User Image">
+                            <% } %>
                 </div>
                 <div class="my-2">
                     <input type="file" name="user_img" id="img">
